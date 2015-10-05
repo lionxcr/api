@@ -16,7 +16,7 @@ server.listen(8080);
 var MongoClient = require('mongodb').MongoClient,
   assert = require('assert');
 
-var mongourl = 'mongodb://localhost:27017/tow';
+var mongourl = 'mongodb://54.148.144.87:27017/tow';
 
 var options = {
   'debug'                 : false, 
