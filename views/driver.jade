@@ -1,0 +1,21 @@
+extends layout
+
+block content
+    script.
+      var something = function() {
+        console.log('something')
+      }
+    h1.
+        Driver List
+    ul
+        each user, i in driver
+            li
+                p driver name: #{user.name}
+                p driver email: #{user.email}
+                p driver rating: #{user.rating}
+                p driver status: #{user.status}
+                p driver area: #{user.area}
+                p driver truck type: #{user.truck}
+                if user.status == 1
+                    button(onclick='something()') Approve
+                

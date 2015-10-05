@@ -1,0 +1,1 @@
+db.drivercollection.findAndModify({ query: { uid: "408ed350d9b1d589fcb6f1e41fb892b4f0c101dbe409eb75de40e99d9879656d"}, sort: { }, update: { $set: { status: 2 } }})
