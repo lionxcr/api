@@ -8,12 +8,12 @@ var bodyParser = require('body-parser');
 // New Code
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('54.148.144.87:27017/tow');
+var db = monk('localhost:27017/tow');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var app = express();
-app.listen(80);
+app.listen(3001);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
