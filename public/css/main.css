@@ -44,8 +44,23 @@ body{
 }
 
 
+.sendPush{
+  color: #fff;
+  background-color: #fa2b2b;
+  vertical-align: middle;
+  position: absolute;
+  width: 180px;
+  height: 40px;
+  outline: none;
+  border:none !important;
+  box-shadow:none !important;
+  padding-top: 6px;
+}
 
-
+.sendPush :hover{
+	background-color: #c0c0c0;
+ 	color: #202020;
+}
 
 
 

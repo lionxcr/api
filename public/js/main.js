@@ -17,15 +17,9 @@ google.maps.event.addDomListener(window, 'load', function(){
 });
 
 function displayData(data){
-	$ul = $('<ul>');
 	console.log(data);
-	$.each(data, function(index, value) {
-		console.log(index);
-		console.log(value);
-		$ul.append($('<li>').html("<strong>" + index + "</strong><span>" + value + "</span>"));
-	});
-
-	$(".data").html($ul);
+	var button = "<button id="+data['uid']+" onclick='showModal()' class='sendPush'>Alert Driver</button>";
+	$(".dataFromDriver").append(button);
 }
 
 function getDevice(uid){
@@ -38,6 +32,7 @@ function checkIfMapExists(latLng){
 	}
 }
 
+
 function addDevice(uid, latLng){
 	checkIfMapExists(latLng);
 
@@ -49,7 +44,6 @@ function addDevice(uid, latLng){
 		uid: uid
 
 	});
-
 	marker.setMap(map);
 
 	google.maps.event.addListener(marker, 'click', function(){
@@ -71,6 +65,9 @@ function checkIfDeviceExists(data){
 	var uid = data.uid;
 
 	if(typeof devices[uid] == "undefined") {
+		var table = document.getElementById('driverData')
+		var html = "<tr><td>"+data.driverName+"</td></tr>";
+		table.innerHTML = table.innerHTML + html;
 		return addDevice(uid, new google.maps.LatLng(data.latitude, data.longitude));
 	}
 

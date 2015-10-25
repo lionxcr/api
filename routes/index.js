@@ -34,7 +34,8 @@ MongoClient.connect(mongourl, function(err, db) {
   console.log("Connected correctly to mongo DB server");
 
   var collections = {
-    'pings': db.collection('pings')
+    'pings': db.collection('pings'),
+    'driver': db.collection('drivercollection')
   };
   io.on('connection', function(socket) {
     collections.pings.find({}).sort({inserted: -1}).limit(300).toArray(function(err, docs) {
@@ -68,23 +69,32 @@ MongoClient.connect(mongourl, function(err, db) {
 
     device.on("ping",function(data, db) {
       data.uid = this.getUID();
-      console.log(data);
       io.emit('ping', data);
 
       //this = device
       console.log("I'm here: " + data.latitude + ", " + data.longitude + " (" + this.getUID() + ")");
 
       var data_to_insert = data;
+      var name = '';
       data_to_insert.uid = this.getUID();
-      var cursor = collections.pings.find( { "uid": data_to_insert.uid } );
-       cursor.each(function(err, doc) {
+      var cursor1 = collections.driver.find( { "uid": data_to_insert.uid } );
+       cursor1.each(function(err, doc) {
           assert.equal(err, null);
           if (doc != null) {
-             console.log(doc._id);
-             collections.pings.remove({_id: new mongodb.ObjectID(doc._id)});
-             collections.pings.insert(data_to_insert);
-          } else {
-             collections.pings.insert(data_to_insert);
+             var cursor = collections.pings.find( { "uid": data_to_insert.uid } );
+             data_to_insert['driverName'] = doc.name;
+             data_to_insert['driverTruck'] = doc.truck;
+             data_to_insert['driverArea'] = doc.area;
+             console.log(data_to_insert);
+             cursor.each(function(err, doc) {
+                assert.equal(err, null);
+                if (doc != null) {
+                   collections.pings.remove({_id: new mongodb.ObjectID(doc._id)});
+                   collections.pings.insert(data_to_insert);
+                } else {
+                   collections.pings.insert(data_to_insert);
+                }
+             });
           }
        });
       
@@ -101,14 +111,14 @@ MongoClient.connect(mongourl, function(err, db) {
     //Also, you can listen on the native connection object
     connection.on('data', function(data) {
       //echo raw data package
-      console.log(data.toString()); 
+      // console.log(data.toString()); 
     })
 
   });
 });
 
 router.get('/console', function (req, res) {
-  res.sendFile(__dirname + '/console.html');
+  res.render('console');
 });
 
 /* GET home page. */
@@ -117,8 +127,19 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET Hello World page. */
-router.get('/helloworld', function(req, res) {
-    res.render('helloworld', { title: 'Hello, World!' });
+router.post('/approve', function(req, res) {
+    var db = req.db;
+    var collection = db.get('drivercollection');
+    collection.update(
+          { "uid" : req.body.token },
+          {
+            $set: { "status": 2 }
+          }, function(err, results) {
+          console.log(results);
+          if (results) {
+            res.render('console');
+          };
+       });
 });
 
 /* GET Userlist page. */
@@ -192,6 +213,18 @@ router.post('/driver/status', function(req, res) {
     });
 });
 
+router.post('/sendJob', function(req, res) {
+  var token = req.body.token;
+  if (sendPushToDriver(token)) {
+      req.send("success");
+  };
+});
+
+router.post('/newJobRequest', function(req, res) {
+  console.log(req.body);
+  res.json({status: 200});
+});
+
 function sendPushToDriver(token){
   var tokens = [token],
         options = {
@@ -227,8 +260,10 @@ function sendPushToDriver(token){
       function pushNotificationToMany() {
         console.log('Sending the same notification each of the devices with one call to pushNotification.');
         var note = new apn.notification();
-        note.setAlertText("Baby your bday is really soon!!");
+        note.setAlertText("You Have  new Job pending");
+        note.sound = "ping.aiff";
         note.badge = 1;
+        note.payload = {'data': {'job' : 'pickMeUp'}}
         service.pushNotification(note, tokens);
       }
       pushNotificationToMany();

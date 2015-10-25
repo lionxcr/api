@@ -1,0 +1,74 @@
+extends console_layout
+
+block content
+	script.
+		var socket = io();
+	div(id="container" class="container-fluid")
+		div.modal.fade(id="myModal" tabindex="-1" role="dialog")
+			.modal-dialog.wide-modal
+				.modal-content
+					.modal-header
+						button(type="button", class="close", data-dismiss="modal") x
+						h3 New Job Request
+					.modal-body(id="modal_body")
+						form(action="/newJobRequest", method="post")
+							input(type="text", name="name" placeholder="User Name")
+							br
+							br
+							input(type="phone", name="phone" placeholder="User Phone Number")
+							br
+							br
+							input(type="text", name="lat" placeholder="latitude")
+							br
+							br
+							input(type="text", name="long" placeholder="longitude")
+							br
+							br
+							input(type="text", name="dLat" placeholder="Destination latitude")
+							br
+							br
+							input(type="text", name="dLon" placeholder="Destination longitude")
+							br
+							br
+							input(type="number", name="distance" placeholder="Distance in KM")
+							br
+							br
+							input(type="number", name="price" placeholder="Price")
+							br
+							br
+							input(type="text", name="vehicle" placeholder="Vehicle Weight/Model/Make/Year")
+							br
+							br
+							input(type="submit", value="Send Request")
+					.modal-footer
+		div(class="col-md-2" id="nav")
+			div(class='row')
+				div(class='col-md-12' style='height: 150px;')
+					h1 CR GRUAS
+					button(onclick="showModal()" class="sendPush") NEW JOB
+			div(class='row')
+				div(class='col-md-12')
+					div
+						table(class="table table-condensed")
+							thread
+								tr
+									th Drivers Available for Job
+							tbody(id='driverData')
+					div(class="dataFromDriver")
+		div(id="map-canvas" class="col-md-10")
+			span(id="waiting") Waiting for drivers to connect...
+	script(src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js")
+	script.
+		window.jQuery || document.write("<script src='js/vendor/jquery-1.11.2.min.js'><\/script>")
+	script.
+		function showModal(){
+			$('#myModal').modal('show');
+		}
+	script.
+		$(document).ready(function(){
+			$('body').on('hidden.bs.modal', '.modal', function () {
+				$(this).removeData('bs.modal');
+			});
+		});
+	script(src="/js/vendor/bootstrap.min.js")
+	script(src="/js/main.js")

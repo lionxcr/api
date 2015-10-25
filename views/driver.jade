@@ -1,10 +1,6 @@
 extends layout
 
 block content
-    script.
-      var something = function() {
-        console.log('something')
-      }
     h1.
         Driver List
     ul
@@ -17,5 +13,6 @@ block content
                 p driver area: #{user.area}
                 p driver truck type: #{user.truck}
                 if user.status == 1
-                    button(onclick='something()') Approve
-                
+                    form(action='/approve', method='post')
+                        input(type='text' value='#{user.uid}' name='token' style='display: none;')
+                        button(type='submit') Approve     
